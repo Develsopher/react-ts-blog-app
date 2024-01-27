@@ -1,7 +1,11 @@
+import Header from "components/Header";
+import LoginForm from "components/Loginform";
+
 const LoginPage = () => {
   return (
     <>
-      <h1>Login page</h1>
+      <Header />
+      <LoginForm />
     </>
   );
 };

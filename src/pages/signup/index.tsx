@@ -1,7 +1,11 @@
+import Header from "components/Header";
+import SignupForm from "components/SignupForm";
+
 const SignupPage = () => {
   return (
     <>
-      <h1>Signup page</h1>
+      <Header />
+      <SignupForm />
     </>
   );
 };
