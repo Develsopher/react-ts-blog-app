@@ -8,7 +8,7 @@ const ProfilePage = () => {
     <>
       <Header />
       <Profile />
-      <PostList />
+      <PostList hasNavigation={false} defaultTab="my" />
       <Footer />
     </>
   );

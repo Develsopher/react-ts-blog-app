@@ -1,29 +1,64 @@
-import { Link } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useParams } from "react-router-dom";
+import { PostProps } from "./PostList";
+import { deleteDoc, doc, getDoc } from "firebase/firestore";
+import { db } from "firebaseApp";
+import Loader from "./Loader";
+import { toast } from "react-toastify";
 
 const PostDetail = () => {
+  const [post, setPost] = useState<PostProps | null>(null);
+  const params = useParams();
+  const navigate = useNavigate();
+
+  const getPost = async (id: string) => {
+    if (id) {
+      const docRef = doc(db, "posts", id);
+      const docSnap = await getDoc(docRef);
+
+      setPost({ id: docSnap.id, ...(docSnap.data() as PostProps) });
+    }
+  };
+
+  const handleDelete = async () => {
+    const confirm = window.confirm("Are you sure you want to delete?");
+    if (confirm && post && post.id) {
+      await deleteDoc(doc(db, "posts", post.id));
+      toast.success("성공적으로 삭제하였습니다.");
+      navigate("/");
+    }
+  };
+
+  useEffect(() => {
+    if (params?.id) getPost(params?.id);
+  }, [params?.id]);
+
   return (
     <>
       <div className="post__detail">
-        <div className="post__box">
-          <div className="post__title">Lorem Ipsum dolor sit amet</div>
-          <div className="post__profile-box">
-            <div className="post__profile"></div>
-            <div className="post__author-name">Develsopher</div>
-            <div className="post__date">2023.07.08 토요일</div>
-          </div>
-          <div className="post__utils-box">
-            <div className="post__delete">삭제</div>
-            <div className="post__edit">
-              <Link to={`/posts/edit/1`}>수정</Link>
+        {post ? (
+          <div className="post__box">
+            <div className="post__title">{post?.title}</div>
+            <div className="post__profile-box">
+              <div className="post__profile"></div>
+              <div className="post__author-name">{post?.email}</div>
+              <div className="post__date">{post?.createdAt}</div>
+            </div>
+            <div className="post__utils-box">
+              <div className="post__delete" onClick={handleDelete}>
+                삭제
+              </div>
+              <div className="post__edit">
+                <Link to={`/posts/edit/${post.id}`}>수정</Link>
+              </div>
+            </div>
+            <div className="post__text post__text--pre-wrap">
+              {post?.content}
             </div>
           </div>
-          <div className="post__text">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Explicabo
-            quod, ullam tenetur necessitatibus architecto, nulla sequi debitis
-            consequatur alias eveniet impedit totam consequuntur illo laborum!
-            Esse expedita placeat natus laboriosam!
-          </div>
-        </div>
+        ) : (
+          <Loader />
+        )}
       </div>
     </>
   );
