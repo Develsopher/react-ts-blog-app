@@ -11,7 +11,6 @@ interface CommentsProps {
 }
 
 const Comments = ({ post, getPost }: CommentsProps) => {
-  console.log("comment post", post);
   const [comment, setComment] = useState("");
   const { user } = useContext(AuthContext);
 
